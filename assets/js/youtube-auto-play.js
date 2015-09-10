@@ -3,8 +3,27 @@
 
   $(document).ready(function(){
     var video = [];
+    $('iframe').iframeTracker({
+        blurCallback: function(){
+          console.log(this._overId);
+          if($(this._overId).hasClass("scrollover")){
+            $(this._overId).removeClass("scrollover");
+          }else{
+            $(this._overId).addClass("scrollover");
+          }
+            // Do something when the iframe is clicked (like firing an XHR request)
+        },
+        overCallback: function(element){
+          //$(element).remove("scrollover");
+
+            this._overId = $(element);
+              console.log(this._overId);
+          //  this._overId = $(element).parents('.iframe_wrap').attr('id'); // Saving the iframe wrapper id
+        },
+    });
     setTimeout(function(){
       $( ".fluid-width-video-wrapper" ).each(function(key,value){
+        $(this).find("iframe").addClass("scrollover");
         console.log(isScrolledIntoView($(".fluid-width-video-wrapper")));
         if (isScrolledIntoView(this)) {
             var get_id = $(this).find("iframe").attr("id");
@@ -19,13 +38,35 @@
 
 
         $(".fluid-width-video-wrapper").each(function() {
-            if (isScrolledIntoView(this)) {
+
+            if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover")) {
+              if($(this).parent(".embed-container").hasClass("youtube")){
                 var get_id = $(this).find("iframe").attr("id");
                 callPlayer(get_id, "playVideo");
+              }else if($(this).parent(".embed-container").hasClass("vimeo")){
+                var iframe = $(this).find('iframe')[0];
+                var player = $f(iframe);
+                player.api('play');
+              }
             } else {
+              if($(this).parent(".embed-container").hasClass("youtube")){
                 var get_id = $(this).find("iframe").attr("id");
                 callPlayer(get_id, "pauseVideo");
+              }else if($(this).parent(".embed-container").hasClass("vimeo")){
+                var iframe = $(this).find('iframe')[0];
+                var player = $f(iframe);
+                player.api('pause');
+              }
             }
+
+        });
+
+        $("video.wp-video-shortcode").each(function() {
+        //  if (isScrolledIntoView(this)) {
+        //      $(this).play();
+        //  } else {
+        //      $(this).pause();
+        //  }
         });
 
       });
@@ -111,6 +152,76 @@
           :
               (add ? window.attachEvent : window.detachEvent)('onmessage', listener);
       }
+
+      function onMessageReceived(event) {
+        // Handle messages from the vimeo player only
+        if (!(/^https?:\/\/player.vimeo.com/).test(event.origin)) {
+            return false;
+        }
+
+        if (playerOrigin === '*') {
+            playerOrigin = event.origin;
+        }
+
+        var data = JSON.parse(event.data);
+
+        switch (data.event) {
+            case 'ready':
+                onReady();
+                break;
+
+            case 'playProgress':
+                onPlayProgress(data.data);
+                break;
+
+            case 'pause':
+                onPause();
+                break;
+
+            case 'finish':
+                onFinish();
+                break;
+        }
+    }
+
+    // Call the API when a button is pressed
+    $('button').on('click', function() {
+        post($(this).text().toLowerCase());
+    });
+
+    // Helper function for sending a message to the player
+    function post(action, value) {
+        var data = {
+          method: action
+        };
+
+        if (value) {
+            data.value = value;
+        }
+
+        var message = JSON.stringify(data);
+        player[0].contentWindow.postMessage(data, playerOrigin);
+    }
+
+    function onReady() {
+        status.text('ready');
+
+        post('addEventListener', 'pause');
+        post('addEventListener', 'finish');
+        post('addEventListener', 'playProgress');
+    }
+
+    function onPause() {
+        status.text('paused');
+    }
+
+    function onFinish() {
+        status.text('finished');
+    }
+
+    function onPlayProgress(data) {
+        status.text(data.seconds + 's played');
+    }
   }
 
   function isScrolledIntoView(elem)
@@ -124,7 +235,6 @@
       var elemTop = $elem.offset().top;
       var elemBottom = elemTop + ($elem.find('iframe').height() / 1.5);
       var elemTop = $elem.offset().top + ($elem.find('iframe').height() / 6.5);
-      console.log(elemTop + "-" + docViewBottom);
 
       return ((elemBottom >= "" + docViewTop) && (elemTop <= docViewBottom));
   }
