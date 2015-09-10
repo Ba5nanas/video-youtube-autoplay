@@ -3,7 +3,7 @@
  * Plugin Name: Video Auto Play
  * Plugin URI:
  * Description: This is plugins ready embed youtube wordpress ( youtube only )
- * Version: 1.0.0
+ * Version: 1.2.0
  * Author: Ba5nanas
  * Author URI: http://themeforest.net/user/ba5nanas
  * License: GPL2
