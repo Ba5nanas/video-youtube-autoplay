@@ -4,29 +4,31 @@
   var focus_iframe = false;
   var focus_click = false;
   var myWindow = window;
-
-  $('iframe').load(function () {
+  $("iframe").load(function () {
     setTimeout(function(){
 
-      $(".fluid-width-video-wrapper").each(function() {
+      $( ".embed-container" ).each(function(key,value) {
+        if(typeof($(this).find("iframe").attr("id")) == "undefined"){
+          $(this).find("iframe").attr("id","ba5nanas_video_"+key);
+        }
         $(this).find("iframe").addClass("scrollover");
         if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover")) {
 
-          if($(this).parent(".embed-container").hasClass("youtube")){
+          if($(this).hasClass("youtube")){
             var get_id = $(this).find("iframe").attr("id");
             callPlayer(get_id, function(){
               callPlayer(get_id, "playVideo");
             });
-          }else if($(this).parent(".embed-container").hasClass("vimeo")){
+          }else if($(this).hasClass("vimeo")){
             var iframe = $(this).find('iframe')[0];
             var player = $f(iframe);
             player.api('play');
           }
         } else {
-          if($(this).parent(".embed-container").hasClass("youtube")){
+          if($(this).hasClass("youtube")){
             var get_id = $(this).find("iframe").attr("id");
             callPlayer(get_id, "pauseVideo");
-          }else if($(this).parent(".embed-container").hasClass("vimeo")){
+          }else if($(this).hasClass("vimeo")){
             var iframe = $(this).find('iframe')[0];
             var player = $f(iframe);
             player.api('pause');
@@ -35,28 +37,36 @@
 
       }); // end init
 
-    },500);
+    },3000);
 
 
 
     // start scroll
     $(window).scroll(function(){
-      $( ".fluid-width-video-wrapper" ).each(function(key,value){
+      $( ".embed-container"  ).each(function(key,value){
+
+        if(typeof($(this).find("iframe").attr("id")) == "undefined"){
+          $(this).find("iframe").attr("id","ba5nanas_video_"+key);
+        }
+
+
+
         if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover")) {
 
-          if($(this).parent(".embed-container").hasClass("youtube")){
+          if($(this).hasClass("youtube")){
+
             var get_id = $(this).find("iframe").attr("id");
             callPlayer(get_id, "playVideo");
-          }else if($(this).parent(".embed-container").hasClass("vimeo")){
+          }else if($(this).hasClass("vimeo")){
             var iframe = $(this).find('iframe')[0];
             var player = $f(iframe);
             player.api('play');
           }
         } else {
-          if($(this).parent(".embed-container").hasClass("youtube")){
+          if($(this).hasClass("youtube")){
             var get_id = $(this).find("iframe").attr("id");
             callPlayer(get_id, "pauseVideo");
-          }else if($(this).parent(".embed-container").hasClass("vimeo")){
+          }else if($(this).hasClass("vimeo")){
             var iframe = $(this).find('iframe')[0];
             var player = $f(iframe);
             player.api('pause');
@@ -73,7 +83,6 @@
       blurCallback: function(){
         if($(this._overId).hasClass("scrollover")){
           $(this._overId).removeClass("scrollover click-pause");
-          console.log(callPlayer.queue);
           //var get_id = $(this._overId).attr("id");
           //callPlayer(get_id, "playVideo");
         }else{
@@ -103,15 +112,14 @@
     }, false);
 
     jQuery(window).on("focusin", function (e) {
-      console.log(focus_iframe);
       if(focus_iframe == false){
-        $( ".fluid-width-video-wrapper" ).each(function(key,value){
+        $( ".embed-container" ).each(function(key,value){
           if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover")) {
-            if($(this).parent(".embed-container").hasClass("youtube")){
+            if($(this).hasClass("youtube")){
               var get_id = $(this).find("iframe").attr("id");
               callPlayer(get_id, "playVideo");
               return;
-            }else if($(this).parent(".embed-container").hasClass("vimeo")){
+            }else if($(this).hasClass("vimeo")){
               var iframe = $(this).find('iframe')[0];
               var player = $f(iframe);
               player.api('play');
@@ -127,13 +135,13 @@
     myWindow.onblur = function() {
        //window.frameElement
        if(focus_iframe == false){
-         $( ".fluid-width-video-wrapper" ).each(function(key,value){
+         $( ".embed-container" ).each(function(key,value){
            if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover")) {
-             if($(this).parent(".embed-container").hasClass("youtube")){
+             if($(this).hasClass("youtube")){
                var get_id = $(this).find("iframe").attr("id");
                callPlayer(get_id, "pauseVideo");
                return;
-             }else if($(this).parent(".embed-container").hasClass("vimeo")){
+             }else if($(this).hasClass("vimeo")){
                var iframe = $(this).find('iframe')[0];
                var player = $f(iframe);
                player.api('pause');
@@ -162,12 +170,12 @@
     /*
     jQuery(document).on("focusin", function (e) {
         setTimeout(function(){
-          $( ".fluid-width-video-wrapper" ).each(function(key,value){
+          $( ".embed-container" ).each(function(key,value){
             if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover")) {
-              if($(this).parent(".embed-container").hasClass("youtube")){
+              if($(this).hasClass("youtube")){
                 var get_id = $(this).find("iframe").attr("id");
                 callPlayer(get_id, "playVideo");
-              }else if($(this).parent(".embed-container").hasClass("vimeo")){
+              }else if($(this).hasClass("vimeo")){
                 var iframe = $(this).find('iframe')[0];
                 var player = $f(iframe);
                 player.api('play');
@@ -186,12 +194,12 @@
       }
         //$(this).find("iframe").addClass("scrollover");
         setTimeout(function(){
-          $( ".fluid-width-video-wrapper" ).each(function(key,value){
+          $( ".embed-container" ).each(function(key,value){
             if (isScrolledIntoView(this) && $(this).find('iframe').hasClass("scrollover") ) {
-              if($(this).parent(".embed-container").hasClass("youtube")){
+              if($(this).hasClass("youtube")){
                 var get_id = $(this).find("iframe").attr("id");
                 callPlayer(get_id, "pauseVideo");
-              }else if($(this).parent(".embed-container").hasClass("vimeo")){
+              }else if($(this).hasClass("vimeo")){
                 var iframe = $(this).find('iframe')[0];
                 var player = $f(iframe);
                 player.api('pause');
@@ -218,6 +226,7 @@
   }
 
   function callPlayer(frame_id, func, args) {
+
     if (window.jQuery && frame_id instanceof jQuery) frame_id = frame_id.get(0).id;
     var iframe = document.getElementById(frame_id);
     if (iframe && iframe.tagName.toUpperCase() != 'IFRAME') {
@@ -269,6 +278,7 @@
               queue.ready = true;
               messageEvent(0, runOnceReady);
               // .. and release the queue:
+              
               while (tmp = queue.shift()) {
                 callPlayer(frame_id, tmp[0], tmp[1]);
               }
